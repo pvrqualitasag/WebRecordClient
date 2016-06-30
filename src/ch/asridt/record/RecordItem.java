@@ -183,12 +183,19 @@ public class RecordItem implements Serializable {
     
     @Override
     public String toString() {
-        return "Id: "               + this.id    + 
-               "\tRecordFileType: " + this.getType()  + 
-               "\tDate: "           + this.getDate()  + 
-               "\tRecordType: "     + this.getRecordType()  +
+        return "Id: "                + this.id    + 
+               "\tRecordFileType: "  + this.getType()  + 
+               "\tDate: "            + this.getDate()  + 
+               "\tRecordType: "      + this.getRecordType()  +
                "\tDateOfRecording: " + this.getDateOfRecording() +
-               "\tValue: "          + this.getRecordValue() + 
-               "\tUnit: "           + this.getRecordUnit()  + "\n";
+               "\tValue: "           + this.getRecordValue() + 
+               "\tUnit: "            + this.getRecordUnit()  + "\n";
+    }
+    
+    public String toTsv() {
+        return this.getRecordType()       + "\t" + 
+                this.getDateOfRecording() + "\t" + 
+                this.getRecordValue()     + "\t" + 
+                this.getRecordUnit();
     }
 }

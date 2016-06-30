@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.util.Date;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -46,7 +47,7 @@ public class RecordTestInteractive {
         String action;
         int id;
 
-        System.out.println("\n\n[L]ist | [R]ead | [A]dd | [D]elete | [Q]uit: ");
+        System.out.println("\n\n[L]ist | [R]ead | [A]dd | [D]elete | [I]nput | [Q]uit: ");
         action = in.readLine();
         if (action.length() == 0) {
             System.out.println("Enter one of: L, R, D, A, Q");
@@ -111,7 +112,7 @@ public class RecordTestInteractive {
 
             // Add a new record item using a PUT 
             case 'A':
-                System.out.println("Enter full path to new record item: ");
+                System.out.println("Enter full path to new record item:");
                 String path = in.readLine();
 
                 // code to add a new record item to the collection
@@ -130,11 +131,54 @@ public class RecordTestInteractive {
                     System.out.println("Successfully uploaded: " + path);
                 }
                 break;
+                
+            // Input a new record item
+            case 'I':
+                System.out.println("Enter new record item manually:");
+                // get info about new record item from command line
+                RecordItem item = getRecordItemInfo(in);
+        
+                System.out.println(" ==> Checking entered record:");
+                System.out.println(item.toString());
+                
+                // do the rest part
+                final Response insertionResponse = target
+                        .path("record/" + item.getId())
+                        .request()
+                        .post(Entity.entity(item, MediaType.APPLICATION_JSON));
+                if (insertionResponse.getStatus() == Response.Status.OK.getStatusCode()){
+                    System.out.println("Successfully uploaded item with id: " + item.getId());
+                }        
+                break;
 
             default:
                 System.out.println("Enter one of: L, R, D, A, Q");
         }
 
         return false;
+    }
+
+    private static RecordItem getRecordItemInfo(BufferedReader in) throws IOException {
+        // input record item info from stdin
+        System.out.println(" > Please enter record id:");
+        String id = in.readLine();
+        System.out.println(" > Please enter record type:");
+        String recordType = in.readLine();
+        System.out.println(" > Please enter date of recording:");
+        String dateOfRecording = in.readLine();
+        System.out.println(" > Please enter record value:");
+        double recordValue = Double.parseDouble(in.readLine());
+        System.out.println(" > Please enter record unit:");
+        String recordUnit = in.readLine();
+        
+        // create instance of RecordItem
+        RecordItem resultItem = new RecordItem(id, id, new Date());
+        resultItem.setRecordType(recordType);
+        resultItem.setDateOfRecording(dateOfRecording);
+        resultItem.setRecordValue(recordValue);
+        resultItem.setRecordUnit(recordUnit);
+                
+        return resultItem;
+        
     }
 }
